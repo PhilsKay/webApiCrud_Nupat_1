@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using webApi_Nupat_1.Data;
+using webApi_Nupat_1.IService;
 using webApi_Nupat_1.Model;
 
 namespace webApi_Nupat_1.Controllers
@@ -9,21 +10,19 @@ namespace webApi_Nupat_1.Controllers
     [Route("api/[controller]")]
     public class FoodController : ControllerBase
     {
-        private readonly DataContext _context;
-
-        public FoodController(DataContext context)
+        private IFood _food;
+        public FoodController(IFood food)
         {
-            _context = context;
+            _food = food;
         }
 
         [HttpPost]
         [Route("post")]
         public IActionResult CreateFood([FromBody]Food addFood)
         {
-            var food = _context.Foods.Add(addFood);
-            _context.SaveChanges();
+            _food.CreateFood(addFood);
 
-            return Ok(food);
+            return Ok();
         }
 
         //food/10
@@ -34,7 +33,7 @@ namespace webApi_Nupat_1.Controllers
             {
                 return BadRequest();
             }
-            Food food = _context.Foods.Find(id);
+            Food food = _food.GetFoodById(id);
             if (food == null)
             {
                 return NotFound("ddd");
@@ -49,7 +48,7 @@ namespace webApi_Nupat_1.Controllers
             {
                 return BadRequest();
             }
-            Food food = _context.Foods.Where(x => x.Name == name).FirstOrDefault();
+            Food food = _food.GetFoodByName(name);
             if (food == null)
             {
                 return NotFound("ddd");
@@ -58,23 +57,21 @@ namespace webApi_Nupat_1.Controllers
         }
 
         [HttpGet("all")]
-        public IActionResult GetFoodByName()
+        public IActionResult GetFoods()
         {
-            List<Food> foods = _context.Foods.ToList();
+            List<Food> foods = _food.GetFoods();
             return Ok(foods);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult GetFoodByName(int id)
+        public IActionResult DeeleteFoodById(int id)
         {
-            Food food = _context.Foods.Find(id);
+            Food food = _food.GetFoodById(id);
             if (food == null)
             {
                 return NotFound("ddd");
             }
-            _context.Foods.Remove(food);
-            _context.SaveChanges();
-
+            _food.DeleteFood(food);
             return Ok("successful");
         }
     }

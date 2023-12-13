@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using webApi_Nupat_1.Data;
+using webApi_Nupat_1.IService;
+using webApi_Nupat_1.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +12,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+//configure food interface
+builder.Services.AddScoped<IFood,FoodService>();    
 
 
 string connectionKey = builder.Configuration.GetConnectionString("DataConnection") ?? "dhdhdh";
